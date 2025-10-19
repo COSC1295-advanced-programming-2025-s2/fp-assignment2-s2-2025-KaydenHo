@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox spacing="10.0"
+      xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1">
+    <padding>
+        <Insets topRightBottomLeft="12.0"/>
+    </padding>
+
+    <Label fx:id="welcomeLabel"
+           style="-fx-font-size:16px; -fx-font-weight:bold;"
+           text="Welcome"/>
+
+    <TableView fx:id="projectsTable" prefHeight="320.0">
+        <columns>
+            <TableColumn fx:id="colTitle" text="Title" prefWidth="160.0"/>
+            <TableColumn fx:id="colLocation" text="Location" prefWidth="120.0"/>
+            <TableColumn fx:id="colDay" text="Day" prefWidth="90.0"/>
+            <TableColumn fx:id="colHourly" text="Hourly Value" prefWidth="110.0"/>
+            <TableColumn fx:id="colAvail" text="Available" prefWidth="90.0"/>
+        </columns>
+    </TableView>
+</VBox>

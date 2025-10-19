@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox spacing="8.0"
+      xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1">
+    <padding>
+        <Insets topRightBottomLeft="12.0"/>
+    </padding>
+
+    <Label text="Create Account" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+
+    <GridPane hgap="8.0" vgap="8.0">
+        <columnConstraints>
+            <ColumnConstraints halignment="RIGHT" minWidth="120.0"/>
+            <ColumnConstraints hgrow="ALWAYS"/>
+        </columnConstraints>
+
+        <Label text="Full name:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+        <TextField fx:id="fullName" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+        <Label text="Username:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+        <TextField fx:id="username" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+        <Label text="Email:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+        <TextField fx:id="email" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+        <Label text="Password:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+        <TextField fx:id="password" GridPane.rowIndex="3" GridPane.columnIndex="1"
+                   promptText="≥8, upper/lower/digit/special"/>
+    </GridPane>
+
+    <HBox spacing="8.0">
+        <Button fx:id="createUser" text="Create"/>
+        <Button fx:id="close" text="Close"/>
+        <Label fx:id="status"/>
+    </HBox>
+</VBox>
