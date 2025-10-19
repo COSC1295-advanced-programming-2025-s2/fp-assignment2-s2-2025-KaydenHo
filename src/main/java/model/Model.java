@@ -25,6 +25,7 @@ public class Model {
     public void setup() throws SQLException {
         System.out.println("SQLite file: " + dao.Database.dbFilePath());
         userDao.setup();
+        dao.Schema.setupAll();
     }
 
     public void loadProjects() throws IOException {
@@ -43,4 +44,6 @@ public class Model {
     
     public ObservableList<Project> getProjects() { 
     	return projects; }
+    
+    
 }
