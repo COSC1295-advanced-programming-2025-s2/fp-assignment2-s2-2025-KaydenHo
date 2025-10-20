@@ -9,10 +9,6 @@ public class Project {
     private final int totalSlots;
     private final int registeredSlots;
     
-    public Project(String title, String location, String day,
-            double hourlyValue, int totalSlots, int registeredSlots) {
- this(0, title, location, day, hourlyValue, totalSlots, registeredSlots);
-}
 
     public Project(int id, String title, String location, String day,
                    double hourlyValue, int totalSlots, int registeredSlots) {
@@ -25,6 +21,11 @@ public class Project {
         this.registeredSlots = registeredSlots;
     }
     
+    public Project(String title, String location, String day,
+            double hourlyValue, int totalSlots, int registeredSlots) {
+ this(0, title, location, day, hourlyValue, totalSlots, registeredSlots);
+}
+
     public int getId() { 
     	return id; }
     

@@ -26,6 +26,7 @@
     <HBox spacing="8.0">
     <Button text="Add to Cart" fx:id="btnAddToCart"/>
     <Button text="View Cart" fx:id="btnViewCart"/>
+    <Button text="Update Password" fx:id="btnUpdatePw"/>
     <Label fx:id="homeStatus"/>
 </HBox>
 </VBox>

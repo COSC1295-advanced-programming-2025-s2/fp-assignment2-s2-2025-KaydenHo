@@ -1,13 +1,14 @@
 package dao;
 
 import model.Project;
+import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ProjectDaoDb implements ProjectDao {
     @Override
-    public List<Project> loadAll() {
+    public List<Project> loadAll() throws IOException {
         String sql = """
             SELECT id, title, location, day, hourly_value, total_slots, registered_slots
             FROM projects
@@ -17,6 +18,7 @@ public class ProjectDaoDb implements ProjectDao {
         try (Connection c = Database.getConnection();
              PreparedStatement ps = c.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
+
             List<Project> out = new ArrayList<>();
             while (rs.next()) {
                 out.add(new Project(
@@ -31,7 +33,7 @@ public class ProjectDaoDb implements ProjectDao {
             }
             return out;
         } catch (SQLException e) {
-            throw new RuntimeException("Load projects from DB failed", e);
+            throw new IOException("DB load projects failed", e);
         }
     }
 }

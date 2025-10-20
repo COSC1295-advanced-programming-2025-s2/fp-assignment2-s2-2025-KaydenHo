@@ -33,6 +33,8 @@ public class HomeController {
 
     @FXML private MenuItem viewProfile;
     @FXML private MenuItem updateProfile;
+    @FXML private Button btnUpdatePw;
+
 
     public HomeController(Stage parentStage, Model model) {
         this.stage = new Stage();
@@ -42,16 +44,32 @@ public class HomeController {
 
     @FXML
     public void initialize() {
+        // --- Table bindings ---
         colTitle.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getTitle()));
         colLocation.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getLocation()));
         colDay.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getDay()));
         colHourly.setCellValueFactory(c -> new SimpleDoubleProperty(c.getValue().getHourlyValue()));
         colAvail.setCellValueFactory(c -> new SimpleIntegerProperty(c.getValue().getAvailableSlots()));
 
+        // --- Format Hourly as $xx.xx ---
+        colHourly.setCellFactory(col -> new TableCell<>() {
+            @Override protected void updateItem(Number n, boolean empty) {
+                super.updateItem(n, empty);
+                setText(empty ? "" : String.format("$%.2f", n.doubleValue()));
+            }
+        });
+
+        // --- Button actions ---
+        if (btnUpdatePw != null) btnUpdatePw.setOnAction(e -> openUpdatePassword());
+        if (btnAddToCart != null) btnAddToCart.setOnAction(e -> handleAddToCart());
+        if (btnViewCart  != null) btnViewCart.setOnAction(e -> openCart());
+
+        // --- Welcome label ---
         if (model.getCurrentUser() != null) {
             welcomeLabel.setText("Welcome, " + model.getCurrentUser().getUsername());
         }
 
+        // --- Load projects ---
         try {
             model.loadProjects();
             projectsTable.setItems(model.getProjects());
@@ -59,10 +77,16 @@ public class HomeController {
             welcomeLabel.setText("Error loading projects: " + e.getMessage());
         }
 
-        // wire buttons
-        if (btnAddToCart != null) btnAddToCart.setOnAction(e -> handleAddToCart());
-        if (btnViewCart  != null) btnViewCart.setOnAction(e -> openCart());
+        // --- Disable Add to Cart until valid selection ---
+        if (btnAddToCart != null) btnAddToCart.setDisable(true);
+
+        projectsTable.getSelectionModel().selectedItemProperty().addListener((obs, oldP, p) -> {
+            boolean enable = p != null && p.getAvailableSlots() > 0;
+            if (btnAddToCart != null) btnAddToCart.setDisable(!enable);
+            setStatus(p == null ? "Select a project." : ("Available: " + p.getAvailableSlots()));
+        });
     }
+
 
     public void showStage(Pane root) {
         Scene scene = new Scene(root, 640, 420);
@@ -135,5 +159,21 @@ public class HomeController {
         }).orElse(null);
     }
 
-    private void setStatus(String msg) { if (homeStatus != null) homeStatus.setText(msg); }
+    private void setStatus(String msg) {
+    	if (homeStatus != null) homeStatus.setText(msg); }
+    
+    private void openUpdatePassword() {
+        try {
+            var url = getClass().getResource("/view/UpdatePasswordView.fxml");
+            var loader = new javafx.fxml.FXMLLoader(url);
+            var c = new UpdatePasswordController(stage, model);
+            loader.setController(c);
+
+            Parent root = loader.load();   
+            c.showStage(root);
+
+        } catch (Exception e) {
+            setStatus("Open password update failed: " + e.getMessage());
+        }
+    }
 }

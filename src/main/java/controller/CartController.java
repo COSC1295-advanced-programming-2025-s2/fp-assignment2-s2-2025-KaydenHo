@@ -40,8 +40,24 @@ public class CartController {
         colHours.setCellValueFactory(c -> new SimpleIntegerProperty(c.getValue().hours()));
         colHourly.setCellValueFactory(c -> new SimpleDoubleProperty(c.getValue().hourlyValue()));
         colTotal.setCellValueFactory(c ->
-            new SimpleDoubleProperty(c.getValue().hourlyValue() * c.getValue().hours() * c.getValue().slots())
+            new SimpleDoubleProperty(
+                c.getValue().hourlyValue() * c.getValue().hours() * c.getValue().slots()
+            )
         );
+
+        // pretty currency formatting
+        colHourly.setCellFactory(col -> new TableCell<>() {
+            @Override protected void updateItem(Number n, boolean empty) {
+                super.updateItem(n, empty);
+                setText(empty ? "" : String.format("$%.2f", n.doubleValue()));
+            }
+        });
+        colTotal.setCellFactory(col -> new TableCell<>() {
+            @Override protected void updateItem(Number n, boolean empty) {
+                super.updateItem(n, empty);
+                setText(empty ? "" : String.format("$%.2f", n.doubleValue()));
+            }
+        });
 
         btnRemove.setOnAction(e -> removeSelected());
         btnConfirm.setOnAction(e -> confirm());
@@ -63,7 +79,9 @@ public class CartController {
         var it = cartTable.getSelectionModel().getSelectedItem();
         if (it == null) { status.setText("Select an item to remove."); return; }
         try {
-            model.getCartDao().removeCartItem(model.getCurrentUser().getUsername(), it.projectId());
+            model.getCartDao().removeCartItem(
+                model.getCurrentUser().getUsername(), it.projectId()
+            );
             refresh();
         } catch (Exception e) {
             status.setText("Remove failed: " + e.getMessage());
@@ -87,7 +105,7 @@ public class CartController {
             return;
         }
 
-        // day rule safety check
+        // day-rule check (no past day this week)
         ZoneId zone = ZoneId.of("Australia/Melbourne");
         for (CartItem it : items) {
             if (!WeekRule.isAllowedThisWeek(it.day(), zone)) {
@@ -97,7 +115,9 @@ public class CartController {
         }
 
         try {
-            model.getRegistrationDao().confirm(model.getCurrentUser().getUsername(), items);
+            model.getRegistrationDao().confirm(
+                model.getCurrentUser().getUsername(), items
+            );
             status.setText("Registration confirmed!");
             refresh();
         } catch (Exception e) {

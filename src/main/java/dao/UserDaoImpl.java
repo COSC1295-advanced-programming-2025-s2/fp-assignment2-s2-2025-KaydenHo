@@ -129,4 +129,15 @@ public class UserDaoImpl implements UserDao {
             }
         }
     }
+    
+    @Override
+    public boolean updatePassword(String username, String newRawPassword) throws SQLException {
+        final String sql = "UPDATE users SET password_hash=? WHERE username=?";
+        try (Connection c = Database.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setString(1, util.PasswordHasher.sha256(newRawPassword));
+            ps.setString(2, username.trim());
+            return ps.executeUpdate() == 1;
+        }
+    }
 }
