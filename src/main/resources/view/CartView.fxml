@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox spacing="10.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
+    <TableView fx:id="cartTable" prefHeight="300.0">
+        <columns>
+            <TableColumn fx:id="colTitle" text="Title" prefWidth="160.0"/>
+            <TableColumn fx:id="colDay" text="Day" prefWidth="80.0"/>
+            <TableColumn fx:id="colSlots" text="Slots" prefWidth="70.0"/>
+            <TableColumn fx:id="colHours" text="Hours" prefWidth="70.0"/>
+            <TableColumn fx:id="colHourly" text="Hourly" prefWidth="90.0"/>
+            <TableColumn fx:id="colTotal" text="Total" prefWidth="110.0"/>
+        </columns>
+    </TableView>
+
+    <HBox spacing="8.0">
+        <Button fx:id="btnRemove" text="Remove Selected"/>
+        <Button fx:id="btnConfirm" text="Confirm Registration"/>
+        <Label fx:id="status"/>
+    </HBox>
+</VBox>

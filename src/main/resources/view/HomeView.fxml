@@ -23,4 +23,9 @@
             <TableColumn fx:id="colAvail" text="Available" prefWidth="90.0"/>
         </columns>
     </TableView>
+    <HBox spacing="8.0">
+    <Button text="Add to Cart" fx:id="btnAddToCart"/>
+    <Button text="View Cart" fx:id="btnViewCart"/>
+    <Label fx:id="homeStatus"/>
+</HBox>
 </VBox>
