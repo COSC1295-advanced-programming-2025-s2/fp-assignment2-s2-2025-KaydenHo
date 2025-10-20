@@ -50,10 +50,14 @@ public class UpdatePasswordController {
         }
     }
 
+
     public void showStage(Parent root) {
-        stage.setScene(new Scene(root, 400, 220));
+        Scene scene = new Scene(root, 400, 220);
+        scene.setOnKeyPressed(ev -> { if (ev.getCode() == javafx.scene.input.KeyCode.ESCAPE) stage.close(); });
+        stage.setScene(scene);
         stage.setResizable(false);
         stage.setTitle("Update Password");
         stage.show();
+        curPw.requestFocus();
     }
 }

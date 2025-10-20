@@ -8,6 +8,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.scene.Parent;
+import javafx.scene.input.KeyCode;
 import model.CartItem;
 import model.Model;
 import util.ConfirmValidator;
@@ -71,7 +72,8 @@ public class CartController {
             cartTable.setItems(FXCollections.observableArrayList(items));
             status.setText("Items: " + items.size());
         } catch (Exception e) {
-            status.setText("Load failed: " + e.getMessage());
+            util.Ui.error("Load Cart Failed", e.getMessage());
+            status.setText("Load failed");
         }
     }
 
@@ -79,20 +81,33 @@ public class CartController {
         var it = cartTable.getSelectionModel().getSelectedItem();
         if (it == null) { status.setText("Select an item to remove."); return; }
         try {
-            model.getCartDao().removeCartItem(
-                model.getCurrentUser().getUsername(), it.projectId()
-            );
+            model.getCartDao().removeCartItem(model.getCurrentUser().getUsername(), it.projectId());
             refresh();
         } catch (Exception e) {
-            status.setText("Remove failed: " + e.getMessage());
+            util.Ui.error("Remove Failed", e.getMessage());
         }
+    }
+    
+    public void showStage(Parent root) {
+        Scene scene = new Scene(root, 680, 420);
+
+        // ESC closes this window
+        scene.setOnKeyPressed(ev -> {
+            if (ev.getCode() == KeyCode.ESCAPE) stage.close();
+        });
+
+        stage.setScene(scene);
+        stage.setResizable(false);
+        stage.setTitle("Your Cart");
+        stage.show();
+
+        cartTable.requestFocus();
     }
 
     private void confirm() {
-        List<CartItem> items = cartTable.getItems();
+        List<model.CartItem> items = cartTable.getItems();
         if (items.isEmpty()) { status.setText("Cart is empty."); return; }
 
-        // 6-digit code
         TextInputDialog codeDlg = new TextInputDialog();
         codeDlg.setTitle("Confirmation");
         codeDlg.setHeaderText(null);
@@ -100,35 +115,26 @@ public class CartController {
         var r = codeDlg.showAndWait();
         if (r.isEmpty()) return;
         String code = r.get();
-        if (!ConfirmValidator.isSixDigit(code)) {
-            status.setText("Invalid code. Use 6 digits.");
+        if (!util.ConfirmValidator.isSixDigit(code)) {
+            util.Ui.warn("Invalid Code", "Please enter a 6-digit number.");
             return;
         }
 
-        // day-rule check (no past day this week)
-        ZoneId zone = ZoneId.of("Australia/Melbourne");
-        for (CartItem it : items) {
-            if (!WeekRule.isAllowedThisWeek(it.day(), zone)) {
-                status.setText("Past-day item found: " + it.day());
+        java.time.ZoneId zone = java.time.ZoneId.of("Australia/Melbourne");
+        for (model.CartItem it : items) {
+            if (!util.WeekRule.isAllowedThisWeek(it.day(), zone)) {
+                util.Ui.warn("Invalid Day", "Past-day item found: " + it.day());
                 return;
             }
         }
 
         try {
-            model.getRegistrationDao().confirm(
-                model.getCurrentUser().getUsername(), items
-            );
-            status.setText("Registration confirmed!");
+            model.getRegistrationDao().confirm(model.getCurrentUser().getUsername(), items);
+            util.Ui.info("Success", "Registration confirmed!");
             refresh();
         } catch (Exception e) {
-            status.setText("Confirm failed: " + e.getMessage());
+            util.Ui.error("Confirm Failed", e.getMessage());
         }
-    }
-
-    public void showStage(Parent root) {
-        stage.setScene(new Scene(root, 680, 420));
-        stage.setResizable(false);
-        stage.setTitle("Your Cart");
-        stage.show();
+        
     }
 }

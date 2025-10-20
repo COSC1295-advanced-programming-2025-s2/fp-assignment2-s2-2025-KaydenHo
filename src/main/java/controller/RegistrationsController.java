@@ -80,13 +80,16 @@ public class RegistrationsController {
     }
 
     public void showStage(Parent root) {
-        stage.setScene(new Scene(root, 700, 420));
+        Scene scene = new Scene(root, 700, 420);
+        scene.setOnKeyPressed(ev -> { if (ev.getCode() == javafx.scene.input.KeyCode.ESCAPE) stage.close(); });
+        stage.setScene(scene);
         stage.setResizable(false);
         stage.setTitle("My Participation History");
         stage.show();
+        tbl.requestFocus();
     }
 
-    // Row model for table
+
     static class RegistrationRow {
         final LongProperty regId = new SimpleLongProperty();
         final IntegerProperty projectId = new SimpleIntegerProperty();
