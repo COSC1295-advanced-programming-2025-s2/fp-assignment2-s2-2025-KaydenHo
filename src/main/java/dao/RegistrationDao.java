@@ -6,4 +6,6 @@ import java.util.List;
 
 public interface RegistrationDao {
     void confirm(String username, List<CartItem> items) throws SQLException;
+    
+    List<model.Registration> listByUser(String username) throws SQLException;
 }
