@@ -5,16 +5,10 @@ import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.scene.Parent;
-import javafx.scene.input.KeyCode;
 import model.CartItem;
 import model.Model;
-import util.ConfirmValidator;
-import util.WeekRule;
-
-import java.time.ZoneId;
 import java.util.List;
 
 public class CartController {
@@ -93,9 +87,11 @@ public class CartController {
 
         // ESC closes this window
         scene.setOnKeyPressed(ev -> {
-            if (ev.getCode() == KeyCode.ESCAPE) stage.close();
+            if (ev.getCode() == javafx.scene.input.KeyCode.ESCAPE) {
+                stage.close();
+                if (parent != null) parent.show();
+            }
         });
-
         stage.setScene(scene);
         stage.setResizable(false);
         stage.setTitle("Your Cart");

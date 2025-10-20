@@ -8,7 +8,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 import model.Model;
-import model.Registration;
+import model.RegistrationDetail;
 
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
@@ -19,9 +19,9 @@ public class RegistrationsController {
     private final Stage parent;
     private final Model model;
 
-    @FXML private TableView<RegistrationRow> tbl;
-    @FXML private TableColumn<RegistrationRow, Number> colRegId, colProject, colSlots, colHours, colTotal;
-    @FXML private TableColumn<RegistrationRow, String> colWhen;
+    @FXML private TableView<Row> tbl;
+    @FXML private TableColumn<Row, String> colRegId, colWhen, colTitle, colLocation, colDay;
+    @FXML private TableColumn<Row, Number> colSlots, colHours, colTotal;
     @FXML private Button btnExport, btnClose;
     @FXML private Label status;
 
@@ -33,13 +33,23 @@ public class RegistrationsController {
     @FXML
     public void initialize() {
         colRegId.setCellValueFactory(c -> c.getValue().regId);
-        colProject.setCellValueFactory(c -> c.getValue().projectId);
+        colWhen.setCellValueFactory(c -> c.getValue().when);
+        colTitle.setCellValueFactory(c -> c.getValue().title);
+        colLocation.setCellValueFactory(c -> c.getValue().location);
+        colDay.setCellValueFactory(c -> c.getValue().day);
         colSlots.setCellValueFactory(c -> c.getValue().slots);
         colHours.setCellValueFactory(c -> c.getValue().hours);
-        colWhen.setCellValueFactory(c -> c.getValue().when);
         colTotal.setCellValueFactory(c -> c.getValue().total);
 
-        btnExport.setOnAction(e -> export());
+        // currency column
+        colTotal.setCellFactory(col -> new TableCell<>() {
+            @Override protected void updateItem(Number n, boolean empty) {
+                super.updateItem(n, empty);
+                setText(empty ? "" : String.format("$%.2f", n.doubleValue()));
+            }
+        });
+
+        btnExport.setOnAction(e -> exportTxt());
         btnClose.setOnAction(e -> { stage.close(); if (parent != null) parent.show(); });
 
         refresh();
@@ -47,8 +57,9 @@ public class RegistrationsController {
 
     private void refresh() {
         try {
-            List<Registration> regs = model.getRegistrationDao().listByUser(model.getCurrentUser().getUsername());
-            var rows = regs.stream().map(RegistrationRow::from).toList();
+            List<RegistrationDetail> details =
+                    model.getRegistrationDao().listDetailsByUser(model.getCurrentUser().getUsername());
+            var rows = details.stream().map(Row::from).toList();
             tbl.setItems(FXCollections.observableArrayList(rows));
             status.setText("Total: " + rows.size());
         } catch (Exception e) {
@@ -56,57 +67,65 @@ public class RegistrationsController {
         }
     }
 
-    private void export() {
+    private void exportTxt() {
         var rows = tbl.getItems();
         if (rows.isEmpty()) { status.setText("Nothing to export."); return; }
 
+        String user = model.getCurrentUser().getUsername();
         var fc = new javafx.stage.FileChooser();
-        fc.setTitle("Export Participation CSV");
-        fc.getExtensionFilters().add(new javafx.stage.FileChooser.ExtensionFilter("CSV Files", "*.csv"));
-        fc.setInitialFileName("participation.csv");
+        fc.setTitle("Export Participation History");
+        fc.getExtensionFilters().add(new javafx.stage.FileChooser.ExtensionFilter("Text Files", "*.txt"));
+        fc.setInitialFileName("history_" + user + ".txt");
         var file = fc.showSaveDialog(stage);
         if (file == null) return;
 
         try (PrintWriter out = new PrintWriter(file, StandardCharsets.UTF_8)) {
-            out.println("reg_id,project_id,slots,hours,date_time,total_value");
+            out.println("Volunteer: " + user);
+            out.println();
             for (var r : rows) {
-                out.printf("%d,%d,%d,%d,%s,%.2f%n",
-                    r.regId.get(), r.projectId.get(), r.slots.get(), r.hours.get(), r.when.get(), r.total.get());
+                out.printf("Reg ID: %s%n", r.regId.get());
+                out.printf("When:   %s%n", r.when.get());
+                out.printf("Project: %s (%s) — %s%n", r.title.get(), r.location.get(), r.day.get());
+                out.printf("Slots:   %d, Hours: %d%n", r.slots.get(), r.hours.get());
+                out.printf("Total:   $%.2f%n", r.total.get());
+                out.println("----------------------------------------");
             }
             status.setText("Exported to " + file.getName());
         } catch (Exception e) {
-            status.setText("Export failed: " + e.getMessage());
+            util.Ui.error("Export failed", e.getMessage());
         }
     }
 
     public void showStage(Parent root) {
-        Scene scene = new Scene(root, 700, 420);
-        scene.setOnKeyPressed(ev -> { if (ev.getCode() == javafx.scene.input.KeyCode.ESCAPE) stage.close(); });
-        stage.setScene(scene);
+        stage.setScene(new Scene(root, 780, 460));
         stage.setResizable(false);
         stage.setTitle("My Participation History");
         stage.show();
         tbl.requestFocus();
     }
 
-
-    static class RegistrationRow {
-        final LongProperty regId = new SimpleLongProperty();
-        final IntegerProperty projectId = new SimpleIntegerProperty();
+    // table row
+    static class Row {
+        final StringProperty regId = new SimpleStringProperty();   // 4-digit formatted
+        final StringProperty when = new SimpleStringProperty();
+        final StringProperty title = new SimpleStringProperty();
+        final StringProperty location = new SimpleStringProperty();
+        final StringProperty day = new SimpleStringProperty();
         final IntegerProperty slots = new SimpleIntegerProperty();
         final IntegerProperty hours = new SimpleIntegerProperty();
-        final StringProperty when = new SimpleStringProperty();
         final DoubleProperty total = new SimpleDoubleProperty();
 
-        static RegistrationRow from(Registration r) {
-            var w = new RegistrationRow();
-            w.regId.set(r.regId());
-            w.projectId.set(r.projectId());
-            w.slots.set(r.slots());
-            w.hours.set(r.hours());
-            w.when.set(r.dateTime().toString());
-            w.total.set(r.totalValue());
-            return w;
+        static Row from(RegistrationDetail d) {
+            Row r = new Row();
+            r.regId.set(String.format("%04d", d.regId()));
+            r.when.set(d.dateTime().toString());
+            r.title.set(d.title());
+            r.location.set(d.location());
+            r.day.set(d.day());
+            r.slots.set(d.slots());
+            r.hours.set(d.hours());
+            r.total.set(d.totalValue());
+            return r;
         }
     }
 }

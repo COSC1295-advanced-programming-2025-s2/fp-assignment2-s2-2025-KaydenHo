@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<VBox spacing="10" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
+  <Label text="Admin — Manage Projects" style="-fx-font-size:16px; -fx-font-weight:bold;"/>
+  <TableView fx:id="tbl" prefHeight="340">
+    <columns>
+      <TableColumn fx:id="colId" text="ID" prefWidth="60"/>
+      <TableColumn fx:id="colTitle" text="Title" prefWidth="160"/>
+      <TableColumn fx:id="colLocation" text="Location" prefWidth="140"/>
+      <TableColumn fx:id="colDay" text="Day" prefWidth="70"/>
+      <TableColumn fx:id="colHourly" text="Hourly ($)" prefWidth="90"/>
+      <TableColumn fx:id="colTotal" text="Total" prefWidth="70"/>
+      <TableColumn fx:id="colReg" text="Registered" prefWidth="90"/>
+      <TableColumn fx:id="colAvail" text="Available" prefWidth="90"/>
+      <TableColumn fx:id="colActive" text="Active" prefWidth="70"/>
+    </columns>
+  </TableView>
+  <HBox spacing="8">
+    <Button fx:id="btnAdd" text="Add / Upsert"/>
+    <Button fx:id="btnToggle" text="Activate/Deactivate"/>
+    <Button fx:id="btnRefresh" text="Refresh"/>
+    <Button fx:id="btnClose" text="Close"/>
+    <Label fx:id="status"/>
+  </HBox>
+</VBox>

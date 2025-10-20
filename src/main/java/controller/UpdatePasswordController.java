@@ -33,15 +33,19 @@ public class UpdatePasswordController {
         String c = curPw.getText();
         String n1 = newPw.getText();
         String n2 = newPw2.getText();
-        if (c.isEmpty() || n1.isEmpty() || n2.isEmpty()) { status.setText("Fill all fields."); return; }
-        if (!n1.equals(n2)) { status.setText("New passwords do not match."); return; }
-        if (!PasswordPolicy.valid(n1)) { status.setText("Password ≥8, upper, lower, digit, special."); return; }
+        if (c.isEmpty() || n1.isEmpty() || n2.isEmpty()) { status.setText("Fill all fields.");
+        return; }
+        if (!n1.equals(n2)) { status.setText("New passwords do not match."); 
+        return; }
+        if (!PasswordPolicy.valid(n1)) { status.setText("Password ≥8, upper, lower, digit, special."); 
+        return; }
 
         var user = model.getCurrentUser();
         try {
             // verify current password
             var found = model.getUserDao().getUserByCredentials(user.getUsername(), c);
-            if (found == null) { status.setText("Current password incorrect."); return; }
+            if (found == null) { status.setText("Current password incorrect."); 
+            return; }
 
             boolean ok = model.getUserDao().updatePassword(user.getUsername(), n1);
             status.setText(ok ? "Password updated." : "Update failed.");

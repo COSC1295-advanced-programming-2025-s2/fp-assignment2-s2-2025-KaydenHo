@@ -6,15 +6,17 @@
   <TableView fx:id="tbl" prefHeight="320">
     <columns>
       <TableColumn fx:id="colRegId" text="Reg ID" prefWidth="80"/>
-      <TableColumn fx:id="colProject" text="Project ID" prefWidth="90"/>
-      <TableColumn fx:id="colSlots" text="Slots" prefWidth="70"/>
-      <TableColumn fx:id="colHours" text="Hours" prefWidth="70"/>
-      <TableColumn fx:id="colWhen" text="When" prefWidth="180"/>
-      <TableColumn fx:id="colTotal" text="Total ($)" prefWidth="100"/>
+      <TableColumn fx:id="colWhen" text="Confirmed At" prefWidth="180"/>
+      <TableColumn fx:id="colTitle" text="Title" prefWidth="150"/>
+      <TableColumn fx:id="colLocation" text="Location" prefWidth="130"/>
+      <TableColumn fx:id="colDay" text="Day" prefWidth="70"/>
+      <TableColumn fx:id="colSlots" text="Slots" prefWidth="65"/>
+      <TableColumn fx:id="colHours" text="Hours" prefWidth="65"/>
+      <TableColumn fx:id="colTotal" text="Total ($)" prefWidth="90"/>
     </columns>
   </TableView>
   <HBox spacing="8">
-    <Button fx:id="btnExport" text="Export CSV"/>
+    <Button fx:id="btnExport" text="Export history_&lt;username&gt;.txt"/>
     <Button fx:id="btnClose" text="Close"/>
     <Label fx:id="status"/>
   </HBox>

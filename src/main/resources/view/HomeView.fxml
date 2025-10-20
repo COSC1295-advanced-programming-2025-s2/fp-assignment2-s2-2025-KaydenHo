@@ -27,6 +27,8 @@
     <Button text="Add to Cart" fx:id="btnAddToCart"/>
     <Button text="View Cart" fx:id="btnViewCart"/>
     <Button text="Update Password" fx:id="btnUpdatePw"/>
+    <Button text="My Registrations" fx:id="btnMyRegs"/>
+    <Button text="Admin" fx:id="btnAdmin"/>
     <Label fx:id="homeStatus"/>
 </HBox>
 </VBox>

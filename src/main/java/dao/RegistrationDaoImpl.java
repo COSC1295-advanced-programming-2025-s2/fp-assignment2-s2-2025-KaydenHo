@@ -105,4 +105,36 @@ public class RegistrationDaoImpl implements RegistrationDao {
             }
         }
     }
+    
+    @Override
+    public List<model.RegistrationDetail> listDetailsByUser(String username) throws SQLException {
+        String sql = """
+            SELECT r.reg_id, r.date_time, p.title, p.location, p.day,
+                   r.slots, r.hours, r.total_value
+            FROM registrations r
+            JOIN projects p ON p.id = r.project_id
+            WHERE r.username = ?
+            ORDER BY datetime(r.date_time) DESC
+        """;
+        try (Connection c = Database.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setString(1, username);
+            try (ResultSet rs = ps.executeQuery()) {
+                List<model.RegistrationDetail> out = new ArrayList<>();
+                while (rs.next()) {
+                    out.add(new model.RegistrationDetail(
+                        rs.getLong("reg_id"),
+                        java.time.LocalDateTime.parse(rs.getString("date_time")),
+                        rs.getString("title"),
+                        rs.getString("location"),
+                        rs.getString("day"),
+                        rs.getInt("slots"),
+                        rs.getInt("hours"),
+                        rs.getDouble("total_value")
+                    ));
+                }
+                return out;
+            }
+        }
+    }
 }
